@@ -1,0 +1,63 @@
+---
+- name: Create temporary directory
+  ansible.builtin.tempfile:
+    state: directory
+    suffix: build
+  register: nfs_tmp_dir
+  changed_when: false
+
+- name: Mount NFS volume
+  ansible.posix.mount:
+    src: "{{ nfs_pv_nfs_server }}:{{ nfs_pv_nfs_path }}"
+    path: "{{ nfs_tmp_dir.path }}"
+    opts: "{{ nfs_pv_nfs_mount_options | join(',') }}"
+    state: ephemeral
+    fstype: nfs
+  become: true
+  changed_when: false
+
+- name: Check directory exist
+  ansible.builtin.stat:
+    path: "{{ nfs_tmp_dir.path }}/{{ nfs_pv_name }}"
+  register: nfs_dir_stat
+
+- name: "Create nfs directory {{ nfs_pv_name }}"
+  when:
+    - not nfs_dir_stat.stat.exists
+  block:
+  - name: "Create nfs directory {{ nfs_pv_name }}"
+    ansible.builtin.file:
+      path: "{{ nfs_tmp_dir.path }}/{{ nfs_pv_name }}"
+      state: directory
+      mode: "{{ nfs_pv_file_mode }}"
+    become: true
+
+  - name: "Set nfs directory group ownership"
+    ansible.builtin.file:
+      path: "{{ nfs_tmp_dir.path }}/{{ nfs_pv_name }}"
+      state: directory
+      group: "{{ nfs_pv_file_group }}"
+    become: true
+
+  - name: "Set nfs directory user ownership"
+    ansible.builtin.file:
+      path: "{{ nfs_tmp_dir.path }}/{{ nfs_pv_name }}"
+      state: directory
+      owner: "{{ nfs_pv_file_owner }}"
+    become: true
+
+- name: Unmount NFS volume
+  ansible.posix.mount:
+    path: "{{ nfs_tmp_dir.path }}"
+    state: absent
+  become: true
+
+- name: "Deploy persistent volume {{ nfs_pv_name }}"
+  kubernetes.core.k8s:
+    state: "{{ 'present' if nfs_pv_enabled else 'absent' }}"
+    definition: "{{ lookup('template', 'pv.yml.j2') | from_yaml }}"
+
+- name: "Deploy persistent volume claim {{ nfs_pv_pvc_name }}"
+  kubernetes.core.k8s:
+    state: "{{ 'present' if nfs_pv_enabled else 'absent' }}"
+    definition: "{{ lookup('template', 'pvc.yml.j2') | from_yaml }}"

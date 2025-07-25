@@ -1,0 +1,15 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ nfs_pv_name }}
+spec:
+  volumeMode: Filesystem
+  accessModes: {{ nfs_pv_access_modes | to_yaml }}
+  capacity:
+    storage: {{ nfs_pv_size }}
+  persistentVolumeReclaimPolicy: {{ nfs_pv_replaim_policy }}
+  nfs:
+    path: {{ nfs_pv_nfs_path }}/{{ nfs_pv_name }}
+    server: {{ nfs_pv_nfs_server }}
+  mountOptions: {{ nfs_pv_nfs_mount_options }}

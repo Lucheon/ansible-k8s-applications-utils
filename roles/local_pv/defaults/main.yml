@@ -1,0 +1,11 @@
+---
+local_pv_enabled: true
+local_pv_path: ""
+local_pv_node_affinity: {}
+local_pv_pvc_namespace: ""
+local_pv_pvc_name: ""
+local_pv_name: "{{ local_pv_pvc_namespace }}-{{ local_pv_pvc_name }}"
+local_pv_access_modes:
+  - ReadWriteOnce
+local_pv_size: 100Mi
+local_pv_replaim_policy: Retain

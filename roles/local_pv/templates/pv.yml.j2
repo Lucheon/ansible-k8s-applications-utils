@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: {{ local_pv_name }}
+spec:
+  volumeMode: Filesystem
+  accessModes: {{ local_pv_access_modes | to_yaml }}
+  capacity:
+    storage: {{ local_pv_size }}
+  persistentVolumeReclaimPolicy: {{ local_pv_replaim_policy }}
+  local:
+    path: {{ local_pv_path }}
+  nodeAffinity: {{ local_pv_node_affinity }}

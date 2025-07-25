@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ nfs_pv_pvc_name }}
+  namespace: {{ nfs_pv_pvc_namespace }}
+spec:
+  accessModes: {{ nfs_pv_access_modes | to_yaml }}
+  resources:
+    requests:
+      storage: {{ nfs_pv_size }}
+  volumeName: {{ nfs_pv_name }}

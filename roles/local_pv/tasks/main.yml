@@ -1,0 +1,10 @@
+---
+- name: "Deploy persistent volume {{ local_pv_name }}"
+  kubernetes.core.k8s:
+    state: "{{ 'present' if local_pv_enabled else 'absent' }}"
+    definition: "{{ lookup('template', 'pv.yml.j2') | from_yaml }}"
+
+- name: "Deploy persistent volume claim {{ local_pv_pvc_name }}"
+  kubernetes.core.k8s:
+    state: "{{ 'present' if local_pv_enabled else 'absent' }}"
+    definition: "{{ lookup('template', 'pvc.yml.j2') | from_yaml }}"

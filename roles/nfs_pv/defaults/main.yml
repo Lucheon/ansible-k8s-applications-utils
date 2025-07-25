@@ -1,0 +1,15 @@
+---
+nfs_pv_enabled: true
+nfs_pv_nfs_server: ""
+nfs_pv_nfs_path: ""
+nfs_pv_nfs_mount_options: ""
+nfs_pv_pvc_namespace: ""
+nfs_pv_pvc_name: ""
+nfs_pv_name: "{{ nfs_pv_pvc_namespace }}-{{ nfs_pv_pvc_name }}"
+nfs_pv_access_modes:
+  - ReadWriteOnce
+nfs_pv_size: 100Mi
+nfs_pv_replaim_policy: Retain
+nfs_pv_file_owner: 65534
+nfs_pv_file_group: 65534
+nfs_pv_file_mode: 0770
